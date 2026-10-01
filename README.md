@@ -49,6 +49,8 @@ Alt. dikembangkan bagi pengguna Mac yang membutuhkan fungsi lengkap CleanShot X 
 | `⌘ + ⇧ + 2` | Record Screen HUD | Panel kontrol rekam video dan GIF |
 | `⌘ + ⇧ + 3` | Capture Fullscreen | Tangkap seluruh layar aktif |
 | `⌘ + ⇧ + 4` | Scrolling Capture | Tangkap halaman bergulir vertikal |
+| `⌘ + ⇧ + 5` | Capture Previous Area | Tangkap ulang area tangkapan sebelumnya |
+| `⌘ + ⇧ + P` | Pick Color (Eyedropper) | Pipet pembesar sampel warna layar ke HEX (`#HEX`) |
 | `⌘ + ⇧ + C` | Capture Text (OCR) | Ekstraksi teks layar ke clipboard |
 | `⌘ + ⇧ + Z` | Capture History | Panel riwayat di bawah notch |
 | `⌘ + ,` | Settings | Pengaturan preferensi dan lokasi penyimpanan |

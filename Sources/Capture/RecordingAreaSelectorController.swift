@@ -46,9 +46,16 @@ final class RecordingAreaSelectorController: NSWindowController {
     ) {
         self.selectionCallback = completion
         self.cancelCallback = onCancel
-        if let screen = NSScreen.main?.frame, let win = self.window {
-            win.setFrame(screen, display: true)
-            overlayView.frame = screen
+        
+        let mouseLocation = NSEvent.mouseLocation
+        let targetScreen = NSScreen.screens.first { NSMouseInRect(mouseLocation, $0.frame, false) }
+            ?? NSScreen.main
+            ?? NSScreen.screens.first
+        let screenFrame = targetScreen?.frame ?? NSRect(x: 0, y: 0, width: 1440, height: 900)
+        
+        if let win = self.window {
+            win.setFrame(screenFrame, display: true)
+            overlayView.frame = NSRect(origin: .zero, size: screenFrame.size)
             overlayView.hintText = hint
             overlayView.reset()
         }
@@ -58,10 +65,16 @@ final class RecordingAreaSelectorController: NSWindowController {
     }
     
     private func completeSelection(rect: CGRect) {
+        let screenRect = self.window?.convertToScreen(rect) ?? rect
+        self.window?.orderOut(nil)
         self.close()
-        selectionCallback?(rect)
-        selectionCallback = nil
-        cancelCallback = nil
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) { [weak self] in
+            guard let self = self else { return }
+            let cb = self.selectionCallback
+            self.selectionCallback = nil
+            self.cancelCallback = nil
+            cb?(screenRect)
+        }
     }
     
     private func cancelSelection() {
@@ -69,11 +82,7 @@ final class RecordingAreaSelectorController: NSWindowController {
         let cb = cancelCallback
         selectionCallback = nil
         cancelCallback = nil
-        if let customCancel = cb {
-            customCancel()
-        } else {
-            RecordingHUDWindowController.shared.showHUD()
-        }
+        cb?()
     }
 }
 

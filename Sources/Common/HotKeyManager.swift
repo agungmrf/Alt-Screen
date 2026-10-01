@@ -82,6 +82,12 @@ final class HotKeyManager {
         
         // 6. ⌘ + ⇧ + Z : Capture History Carousel (kVK_ANSI_Z = 6)
         registerHotKey(id: 6, signature: signature, keyCode: 6, modifiers: mod, name: "⌘⇧Z History Carousel")
+        
+        // 7. ⌘ + ⇧ + 5 : Capture Previous Area (kVK_ANSI_5 = 23)
+        registerHotKey(id: 7, signature: signature, keyCode: 23, modifiers: mod, name: "⌘⇧5 Previous Area")
+        
+        // 8. ⌘ + ⇧ + P : Pick Color / Eyedropper (kVK_ANSI_P = 35)
+        registerHotKey(id: 8, signature: signature, keyCode: 35, modifiers: mod, name: "⌘⇧P Pick Color")
     }
     
     private func registerHotKey(id: UInt32, signature: OSType, keyCode: UInt32, modifiers: UInt32, name: String) {
@@ -134,6 +140,10 @@ final class HotKeyManager {
                 CaptureManager.shared.startCapture(mode: .textOCR)
             case 6:
                 HistoryWindowController.shared.showHistory()
+            case 7:
+                CaptureManager.shared.startCapture(mode: .previousArea)
+            case 8:
+                CaptureManager.shared.startCapture(mode: .colorPicker)
             default:
                 break
             }

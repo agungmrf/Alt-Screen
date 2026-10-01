@@ -177,8 +177,8 @@ final class MenuBarManager: NSObject {
         // 2. Capture Area (viewfinder / 4 brackets) - ⌘⇧1
         menu.addItem(makeItem(title: "Capture Area", icon: symbolImage(name: "viewfinder"), action: #selector(actionCaptureArea), keyEquivalent: "1", modifier: [.command, .shift]))
         
-        // 3. Capture Previous Area
-        menu.addItem(makeItem(title: "Capture Previous Area", icon: symbolImage(name: "arrow.counterclockwise"), action: #selector(actionCapturePreviousArea)))
+        // 3. Capture Previous Area - ⌘⇧5
+        menu.addItem(makeItem(title: "Capture Previous Area", icon: symbolImage(name: "arrow.counterclockwise"), action: #selector(actionCapturePreviousArea), keyEquivalent: "5", modifier: [.command, .shift]))
         
         // 4. Capture Fullscreen - ⌘⇧3
         menu.addItem(makeItem(title: "Capture Fullscreen", icon: symbolImage(name: "display"), action: #selector(actionCaptureFullscreen), keyEquivalent: "3", modifier: [.command, .shift]))
@@ -195,7 +195,10 @@ final class MenuBarManager: NSObject {
         // 8. Capture Text (OCR) - ⌘⇧C
         menu.addItem(makeItem(title: "Capture Text (OCR)", icon: createAaIcon(), action: #selector(actionCaptureTextOCR), keyEquivalent: "c", modifier: [.command, .shift]))
         
-        // 9. Record Screen - ⌘⇧2
+        // 9. Pick Color (Eyedropper) - ⌘⇧P
+        menu.addItem(makeItem(title: "Pick Color (Eyedropper)", icon: symbolImage(name: "eyedropper"), action: #selector(actionPickColor), keyEquivalent: "p", modifier: [.command, .shift]))
+        
+        // 10. Record Screen - ⌘⇧2
         let recItem = makeItem(title: "Record Screen", icon: symbolImage(name: "video"), action: #selector(actionRecordScreen), keyEquivalent: "2", modifier: [.command, .shift])
         self.recordMenuItem = recItem
         menu.addItem(recItem)
@@ -271,35 +274,57 @@ final class MenuBarManager: NSObject {
     // MARK: - Actions
     
     @objc private func actionAllInOne() {
-        CaptureManager.shared.startCapture(mode: .allInOne)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            CaptureManager.shared.startCapture(mode: .allInOne)
+        }
     }
     
     @objc private func actionCaptureArea() {
-        CaptureManager.shared.startCapture(mode: .area)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            CaptureManager.shared.startCapture(mode: .area)
+        }
     }
     
     @objc private func actionCapturePreviousArea() {
-        CaptureManager.shared.startCapture(mode: .previousArea)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            CaptureManager.shared.startCapture(mode: .previousArea)
+        }
     }
     
     @objc private func actionCaptureFullscreen() {
-        CaptureManager.shared.startCapture(mode: .fullscreen)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            CaptureManager.shared.startCapture(mode: .fullscreen)
+        }
     }
     
     @objc private func actionCaptureWindow() {
-        CaptureManager.shared.startCapture(mode: .window)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            CaptureManager.shared.startCapture(mode: .window)
+        }
     }
     
     @objc private func actionScrollingCapture() {
-        ScrollingCaptureManager.shared.startScrollingCapture()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            ScrollingCaptureManager.shared.startScrollingCapture()
+        }
     }
     
     @objc private func actionSelfTimer() {
-        CaptureManager.shared.startCapture(mode: .selfTimer(seconds: 3))
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            CaptureManager.shared.startCapture(mode: .selfTimer(seconds: 3))
+        }
     }
     
     @objc private func actionCaptureTextOCR() {
-        CaptureManager.shared.startCapture(mode: .textOCR)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            CaptureManager.shared.startCapture(mode: .textOCR)
+        }
+    }
+    
+    @objc private func actionPickColor() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            CaptureManager.shared.startCapture(mode: .colorPicker)
+        }
     }
     
     @objc private func actionRecordScreen() {

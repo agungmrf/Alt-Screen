@@ -66,10 +66,10 @@ final class QuickAccessPanel: NSPanel {
         self.isOpaque = false
         self.backgroundColor = .clear
         self.hasShadow = true
+        self.isReleasedWhenClosed = false
         self.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         
         setupCardUI(width: cardWidth, height: cardHeight)
-        startDismissTimer()
         startHoverTracking()
     }
     
@@ -211,24 +211,19 @@ final class QuickAccessPanel: NSPanel {
     
     private func startHoverTracking() {
         hoverCheckTimer?.invalidate()
-        // High-precision tracking loop (0.08s interval) completely immune to AppKit subview event dropped-frames
+        // High-precision tracking loop (0.08s interval) for smooth overlay display
         hoverCheckTimer = Timer.scheduledTimer(withTimeInterval: 0.08, repeats: true) { [weak self] _ in
             guard let self = self, self.isVisible else { return }
             let mouseLoc = NSEvent.mouseLocation
-            // Expanded hit-test bounds: generous 20px margin around card
             let isNearOrInside = self.frame.insetBy(dx: -20, dy: -20).contains(mouseLoc)
             
             if isNearOrInside {
                 if !self.isHovered {
                     self.setHoverState(true)
                 }
-                // As long as mouse is nearby or hovering, freeze auto-dismiss!
-                self.dismissTimer?.invalidate()
-                self.dismissTimer = nil
             } else {
                 if self.isHovered {
                     self.setHoverState(false)
-                    self.startDismissTimer()
                 }
             }
         }
@@ -247,21 +242,6 @@ final class QuickAccessPanel: NSPanel {
                 self.cardContainer.layer?.borderColor = NSColor.white.withAlphaComponent(0.24).cgColor
                 self.cardContainer.layer?.borderWidth = 1.0
             }
-        }
-    }
-    
-    private func startDismissTimer() {
-        let duration = max(SettingsManager.shared.quickAccessDuration, 8.0)
-        dismissTimer?.invalidate()
-        dismissTimer = Timer.scheduledTimer(withTimeInterval: duration, repeats: false) { [weak self] _ in
-            guard let self = self else { return }
-            let mouseLoc = NSEvent.mouseLocation
-            // Double check mouse location before dismissing: if nearby, keep alive!
-            if self.frame.insetBy(dx: -24, dy: -24).contains(mouseLoc) || self.isHovered {
-                self.startDismissTimer()
-                return
-            }
-            self.dismissPanel()
         }
     }
     

@@ -7,6 +7,7 @@ final class WindowManager {
     private var quickAccessPanels: [QuickAccessPanel] = []
     private var editorControllers: [EditorWindowController] = []
     private var pinControllers: [PinWindowController] = []
+    private var activeToastPanels: [NSPanel] = []
     private var historyWindowController: HistoryWindowController?
     private var settingsWindowController: NSWindowController?
     private var aboutWindowController: NSWindowController?
@@ -17,10 +18,40 @@ final class WindowManager {
         let panel = QuickAccessPanel(image: image, fileURL: fileURL, stackIndex: quickAccessPanels.count)
         quickAccessPanels.append(panel)
         panel.orderFront(nil)
+        relayoutQuickAccessPanels(animated: true)
     }
     
     func removeQuickAccess(_ panel: QuickAccessPanel) {
         quickAccessPanels.removeAll { $0 === panel }
+        relayoutQuickAccessPanels(animated: true)
+    }
+    
+    func relayoutQuickAccessPanels(animated: Bool) {
+        let cardWidth: CGFloat = 240
+        let cardHeight: CGFloat = 155
+        let margin: CGFloat = 28
+        let spacing: CGFloat = 14
+        
+        let screenRect = NSScreen.main?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1440, height: 900)
+        let x = screenRect.minX + margin
+        
+        if animated {
+            NSAnimationContext.runAnimationGroup { ctx in
+                ctx.duration = 0.25
+                ctx.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                for (index, item) in quickAccessPanels.enumerated() {
+                    let targetY = screenRect.minY + margin + CGFloat(index) * (cardHeight + spacing)
+                    let targetFrame = NSRect(x: x, y: targetY, width: cardWidth, height: cardHeight)
+                    item.animator().setFrame(targetFrame, display: true)
+                }
+            }
+        } else {
+            for (index, item) in quickAccessPanels.enumerated() {
+                let targetY = screenRect.minY + margin + CGFloat(index) * (cardHeight + spacing)
+                let targetFrame = NSRect(x: x, y: targetY, width: cardWidth, height: cardHeight)
+                item.setFrame(targetFrame, display: true)
+            }
+        }
     }
     
     func openEditor(with image: NSImage) {
@@ -135,6 +166,7 @@ final class WindowManager {
         panel.isOpaque = false
         panel.backgroundColor = .clear
         panel.hasShadow = true
+        panel.isReleasedWhenClosed = false
         
         let effect = NSVisualEffectView(frame: NSRect(x: 0, y: 0, width: width, height: height))
         effect.material = .hudWindow
@@ -151,14 +183,16 @@ final class WindowManager {
         effect.addSubview(label)
         
         panel.contentView = effect
+        activeToastPanels.append(panel)
         panel.orderFront(nil)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.2) { [weak self] in
             NSAnimationContext.runAnimationGroup({ ctx in
                 ctx.duration = 0.3
                 panel.animator().alphaValue = 0.0
             }, completionHandler: {
                 panel.close()
+                self?.activeToastPanels.removeAll { $0 === panel }
             })
         }
     }

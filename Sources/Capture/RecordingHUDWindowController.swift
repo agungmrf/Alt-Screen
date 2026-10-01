@@ -45,6 +45,7 @@ final class RecordingHUDWindowController: NSWindowController {
         window.backgroundColor = .clear
         window.hasShadow = true
         window.isMovableByWindowBackground = true
+        window.isReleasedWhenClosed = false
         window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         
         super.init(window: window)
@@ -408,11 +409,17 @@ final class RecordingHUDWindowController: NSWindowController {
     
     @objc private func selectCustomArea() {
         self.window?.orderOut(nil)
-        RecordingAreaSelectorController.shared.startSelection { [weak self] rect in
+        RecordingAreaSelectorController.shared.startSelection(
+            hint: "Drag to select recording area, or press Escape to cancel",
+            onCancel: { [weak self] in
+                self?.showHUD()
+            }
+        ) { [weak self] rect in
             guard let self = self else { return }
             self.selectedRecordingRect = rect
             self.captureWidth = Int(rect.width)
             self.captureHeight = Int(rect.height)
+            CaptureManager.shared.setLastCapturedArea(rect)
             self.updateDimensionsLabel()
             self.showHUD()
         }

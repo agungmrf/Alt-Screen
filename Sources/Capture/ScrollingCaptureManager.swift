@@ -44,6 +44,7 @@ final class ScrollingCaptureManager: NSObject {
             }
         ) { [weak self] selectedRect in
             guard let self = self else { return }
+            CaptureManager.shared.setLastCapturedArea(selectedRect)
             self.beginCaptureSession(in: selectedRect)
         }
     }

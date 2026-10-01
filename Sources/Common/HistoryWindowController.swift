@@ -37,6 +37,7 @@ final class HistoryWindowController: NSWindowController {
         window.backgroundColor = .clear
         window.hasShadow = true
         window.isMovableByWindowBackground = true
+        window.isReleasedWhenClosed = false
         window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         
         super.init(window: window)
